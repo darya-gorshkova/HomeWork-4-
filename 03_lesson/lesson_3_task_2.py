@@ -8,7 +8,6 @@ catalog = [
     Smartphone("iPhon", "15Pro", "+79022222222")
 
 ]
-
 for smartphone in catalog :
     print(f"{smartphone.mark_phone} - {smartphone.model_phone} . {smartphone.ab_namber} .")
 
