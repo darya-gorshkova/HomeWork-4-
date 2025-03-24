@@ -1,1 +1,3 @@
 pytest
+
+pip3 freeze | findstr selenium >> requirements.txt
