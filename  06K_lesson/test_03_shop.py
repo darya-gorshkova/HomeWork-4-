@@ -1,16 +1,12 @@
-import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 def test_total():
      driver = webdriver.Chrome()
      driver.get("http://www.saucedemo.com/")
-     driver.implicitly_wait(2)
+     driver.implicitly_wait(5)
      driver.find_element(By.ID, "user-name").send_keys("standard_user")
      driver.find_element(By.ID, "password").send_keys("secret_sauce")
      driver.find_element(By.ID, "login-button").click()
@@ -24,12 +20,14 @@ def test_total():
      driver.find_element(By.ID, "last-name").send_keys("Gorshkova")
      driver.find_element(By.ID, "postal-code").send_keys("607652")
      driver.find_element(By.ID, "continue").click()
-     total = totai_price.driver.find_element(By.CLASS_NAME, "summary_total_label").text
+
+     total = driver.find_element(By.CLASS_NAME, "summary_total_label").text
+     expected_total = "Total: $58.29"
+     assert total == expected_total
+
 
      driver.quit()
 
-     expected_total == "Total: $58.29"
-     assert total == expected_total
 
 
 
