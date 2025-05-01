@@ -3,7 +3,7 @@ import json
 
 class TestProjects:
     BASE_URL = "https://yougile.com/api-v2/"
-    TOKEN = "KaNnXVKorxQ6rC2Vg-u+NowZh+n9truUCLZ+D7jzmBopqDtPtgQ2+KP5-1uqnY6P"
+    TOKEN = "value"
 
     @classmethod
     def setup_class(cls):
