@@ -1,93 +1,84 @@
 import requests
-import json
 
-class TestProjects:
-    BASE_URL = "https://yougile.com/api-v2/"
-    TOKEN = "KaNnXVKorxQ6rC2Vg-u+NowZh+n9truUCLZ+D7jzmBopqDtPtgQ2+KP5-1uqnY6P"
+BASE_URL = "value"
+TOKEN = "value"
 
-    @classmethod
-    def setup_class(cls):
-        cls.create_project("Skypro")  # Создаем проект с названием "Skypro"
-
-    @classmethod
-    def teardown_class(cls):
-        if hasattr(cls, 'project_id'):
-            delete_response = requests.delete(f"{cls.BASE_URL}/projects/{cls.project_id}", headers={"Authorization": f"Bearer {cls.TOKEN}"})
-            assert delete_response.status_code in [200, 204], "Удаление проекта завершилось неудачей."
-
-    @staticmethod
-    def create_project(title="Skypro"):  # создаем проект с именем "Skypro"
-        response = requests.post(
-            f"{TestProjects.BASE_URL}/projects",
-            headers={
-                "Authorization": f"Bearer {TestProjects.TOKEN}",
-                "Content-Type": "application/json"
-            },
-            data=json.dumps({"title": title})
-        )
-        assert response.status_code == 201, "Проект не был создан."
-        project_data = response.json()
-        TestProjects.project_id = project_data["id"]  # Сохраняем идентификатор проекта
-        print(f"Проект создан с ID: {TestProjects.project_id}")  # Отображаем ID проекта
-        return response
 
 # Позитивные тесты
-def test_create_project_positive():
-    """Создание проекта с названием 'Skypro'."""
-    try:
-        response = TestProjects.create_project()
-        assert response.status_code == 201
-        assert "id" in response.json()
-    except Exception as e:
-        print(e)
+def test_create_project_positive(): #Создание нового проекта.
 
-def test_get_project_positive():
-    """Получение информации о проекте с использованием сохраненного ID."""
-    if not hasattr(TestProjects, 'project_id'):
-        raise ValueError("Project ID is missing.")
+    data = {'title': "New Project"}
 
-    get_response = requests.get(
-        f"{TestProjects.BASE_URL}/projects/{TestProjects.project_id}",
-        headers={
-            "Authorization": f"Bearer {TestProjects.TOKEN}"
-        }
-    )
-    assert get_response.status_code == 200, "Запрос на получение проекта завершился неудачно."
-    retrieved_project = get_response.json()
-    assert retrieved_project["id"] == TestProjects.project_id, "ID полученного проекта не совпадает с ожидаемым."
-def test_update_project_positive():
-    """Обновление названия проекта."""
-    new_title = "Updated Project Name"
-    update_response = requests.put(
-        f"{TestProjects.BASE_URL}/projects/"f"{TestProject_id
-        headers={
-            "Authorization": f"Bearer {TestProjects.TOKEN}",
-            "Content-Type": "application/json"
-        },
-        data=json.dumps({"title": new_title})
-    )
-    assert update_response.status_code == 200, "Обновление проекта завершилось неудачей."
-    updated_project = update_response.json()
-    assert updated_project["title"] == new_title, "Название проекта не обновлено успешно."
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
 
-def test_get_project_positive():
-    """Получение информации о проекте."""
-    get_response = requests.get(
-        f"{TestProjects.BASE_URL}/projects/{TestProjects.project_id}",
-        headers={
-            "Authorization": f"Bearer {TestProjects.TOKEN}"
-            "project_id==045421f0-5789-432b-b836-30b7d24d8ea4
-    )
-    assert get_response.status_code == 200, "Запрос на получение проекта завершился неудачно."
-    retrieved_project = get_response.json()
-    assert retrieved_project["id"] == TestProjects.project_id, "ID полученного проекта не совпадает с ожидаемым."
+    response = requests.post("https://ru.yougile.com/api-v2/projects", json=data, headers=headers)
+    assert response.status_code == 201
+    assert "id" in response.json()
+    return response, "id"
 
-# Негативные тесты
-def test_create_project_negative_missing_field():
-    """Попытка создать проект без обязательного поля 'title'."""
-    response = requests.post(
-        f"{TestProjects.BASE_URL}/projects",
-        headers={"Authorization": f"Bearer {TestProjects.TOKEN}"},
-        data=json.dumps({}),  # Нет обязательных полей
-    )
-    assert response.status_code == 400
+
+def test_update_project():
+    data = {"title": "Updated Project"}   #Изменение названия проекта.
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
+
+    response = requests.put(f'{BASE_URL}projects/{"3f2570e1-6e11-4f0d-ae74-74ce2ee60607"}', headers=headers, json=data)
+    assert response.status_code == 200
+
+def test_get_project_by_id_positive():
+    project_id = '3f2570e1-6e11-4f0d-ae74-74ce2ee60607' #Получение информации о проекте по id.
+    data = {'title': "New Project"}
+
+    headers = {
+         "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
+
+    response = requests.get( f'{BASE_URL}projects/{project_id}', headers=headers, json=data)
+    print(response.text)  # Выведем текст ответа сервера
+    assert response.status_code == 200
+    assert "id" in response.json(), "Информация о проекте получена успешно."
+
+
+# Негативные тесты:
+def test_create_project_error_title():        # создание проекта с запрещенными символами.
+
+    invalid_data = {'title': "$$$"}
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
+
+    response = requests.post(BASE_URL + "/projects", json=invalid_data, headers=headers)
+    assert response.status_code != 201
+    assert "error" in response.json(), "Ошибка должна возникнуть при попытке создать проект без названия."
+
+def test_update_project_invalid_id():        #Изменение несуществующего проекта
+    invalid_id = 'non-id'
+    data = {"title": "Test Update"}
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
+
+    response = requests.put(f"{BASE_URL}/projects/{invalid_id}", json=data, headers=headers)
+    assert response.status_code != 200
+    assert "error" in response.json()
+
+def test_get_project_by_invalid_id():  #получение информации о несуществующем проекте
+    non_project_id = 'non-id'
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + TOKEN
+    }
+    response = requests.get(f"{BASE_URL}/projects/{non_project_id}", headers=headers)
+    assert response.status_code != 200
+    assert "error" in response.json()
