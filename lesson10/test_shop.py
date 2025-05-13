@@ -1,0 +1,50 @@
+import allure
+import pytest
+from selenium import webdriver
+from ShopPage import *
+
+
+@pytest.fixture(scope="function")
+def driver():
+    driver = webdriver.Chrome()
+    driver.get("https://www.saucedemo.com/")
+    yield driver
+    driver.quit()
+
+@allure.title("Тестирование интернет-магазина")
+@allure.description("Этот тест проверяет процесс авторизации, добавления товаров в корзину, оформление заказа и проверку итоговой суммы.")
+@allure.feature("Покупка товара")
+@allure.severity(allure.severity_level.CRITICAL)
+def test_shop(driver):
+    with allure.step("Авторизация"):
+        # Шаг 1: Авторизация
+        login_page = LoginPage(driver)
+        login_page.login("standard_user", "secret_sauce")
+
+    with allure.step("добавление товаров"):
+        # Шаг 2: Добавление товаров в корзину
+        main_page = MainPage(driver)
+        main_page.add_item_to_cart("add-to-cart-sauce-labs-backpack")  # Добавляем "Sauce Labs Backpack"
+        main_page.add_item_to_cart("add-to-cart-sauce-labs-bolt-t-shirt")  # Добавляем "Sauce Labs Bolt T-Shirt"
+        main_page.add_item_to_cart("add-to-cart-sauce-labs-onesie")  # Добавляем "Sauce Labs Onesie"
+
+    with allure.step("переход в корзину"):
+        # Шаг 3: Переход в корзину
+        main_page.go_to_cart()
+
+    with allure.step("Переход к оформлению заказа"):
+        # Шаг 4: Переход к оформлению заказа
+        cart_page = CartPage(driver)
+        cart_page.go_to_checkout()
+
+    with allure.step("Заполнение формы оформления заказа"):
+        # Шаг 5: Заполнение формы оформления заказа
+        checkout_page = CheckoutPage(driver)
+        checkout_page.fill_checkout_form("John", "Doe", "12345")
+
+    with allure.step("Проверка итоговой стоимости"):
+        # Шаг 6: Проверка итоговой стоимости
+        total_price = checkout_page.get_total_price()
+
+    assert total_price == "Total: $58.29", f"Expected total price to be $58.29, but got {total_price}"
+
