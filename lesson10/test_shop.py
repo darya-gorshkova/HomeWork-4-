@@ -12,7 +12,8 @@ def driver():
     driver.quit()
 
 @allure.title("Тестирование интернет-магазина")
-@allure.description("Этот тест проверяет процесс авторизации, добавления товаров в корзину, оформление заказа и проверку итоговой суммы.")
+@allure.description("Этот тест проверяет процесс авторизации, добавления товаров в корзину, "
+                    "оформление заказа и проверку итоговой суммы.")
 @allure.feature("Покупка товара")
 @allure.severity(allure.severity_level.CRITICAL)
 def test_shop(driver):

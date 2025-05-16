@@ -1,5 +1,8 @@
 from selenium.webdriver.common.by import By
 import allure
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 class LoginPage:
     """Страница авторизации.
@@ -19,6 +22,7 @@ class LoginPage:
                 Возвращаемое значение:
                     None
                 """
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.username_input))
         self.driver = driver
         self.username_input = (By.ID, 'user-name')
         self.password_input = (By.ID, 'password')
@@ -63,7 +67,7 @@ class MainPage:
         self.cart_link = (By.CLASS_NAME, "shopping_cart_link")
 
     @allure.step("")
-    def add_item_to_cart(self, item):
+    def add_item_to_cart(self, item: str) -> None:
         """Метод добавляет товар в корзину.
 
                 Параметры:
@@ -75,7 +79,7 @@ class MainPage:
         self.driver.find_element(By.ID, item).click()
 
     @allure.step("переход на страницу ")
-    def go_to_cart(self):
+    def go_to_cart(self) -> None:
         self.driver.find_element(*self.cart_link).click()
 
 
